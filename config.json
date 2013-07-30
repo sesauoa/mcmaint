@@ -1,7 +1,0 @@
-{
-    "server_dir": "/home/andrewhu/minecraft",
-    "world_name": "world",
-    "backup_dir": "/home/andrewhu/minecraft/backup",
-    "overviewer_dir": "/home/andrewhu/minecraft/overview",
-    "max_backup_size": 20
-}

@@ -1,0 +1,7 @@
+{
+    "server_dir": "/home/user/minecraft",
+    "world_name": "world",
+    "backup_dir": "/home/user/minecraft/backup",
+    "overviewer_dir": "/home/user/minecraft/overview",
+    "max_backup_size": 5000
+}
