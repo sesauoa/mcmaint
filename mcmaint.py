@@ -28,7 +28,7 @@ def directory_size(path):
 
             seen.add(stat.st_ino)
 
-            total_size += stat.st_size
+            total_size += stat.st_sizes
 
     return total_size / 1000000.0  # return in mb
 
@@ -51,7 +51,7 @@ def generate_map(world_dir, overview_dir):
 
 
 def compress_backup(backup_dest):
-    logging.info('compressing {}'.format('backup_dest'))
+    logging.info('compressing {}'.format(backup_dest))
     subprocess.call('zip -rq {} {}'.format(backup_dest + '.zip', backup_dest), shell=True)
     shutil.rmtree(backup_dest)
 
