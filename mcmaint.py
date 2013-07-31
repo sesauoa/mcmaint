@@ -31,17 +31,7 @@ def directory_size(path):
     return total_size / 1000000.0  # return in mb
 
 
-def prune_backups(backup_dir, max_backup_size):
-    backups = list(reversed(sorted(os.listdir(backup_dir))))
-    print(backups)
-
-    while(backups and directory_size(backup_dir) > max_backup_size):
-        backup = backups.pop()
-        os.remove(os.path.join(backup_dir, backup))
-
-
-def backup_world(server_dir, world_name, backup_dir):
-    world_dir = os.path.join(server_dir, world_name)
+def backup_world(world_name, world_dir, backup_dir):
     backup_name = "{}_{}".format(world_name, datetime.datetime.now().date().isoformat())
     backup_dest = os.path.join(backup_dir, backup_name)
 
@@ -51,13 +41,21 @@ def backup_world(server_dir, world_name, backup_dir):
     return backup_dest
 
 
-def generate_map(world_dir, overviewer_dir):
-    subprocess.call('overviewer.py {} {}'.format(world_dir, overviewer_dir), shell=True)
+def generate_map(world_dir, overview_dir):
+    subprocess.call('overviewer.py {} {}'.format(world_dir, overview_dir), shell=True)
 
 
-def compress_backup(backup_name, backup_dest):
+def compress_backup(backup_dest):
     subprocess.call('zip -r {} {}'.format(backup_dest + '.zip', backup_dest), shell=True)
     shutil.rmtree(backup_dest)
+
+
+def prune_backups(backup_dir, max_backup_size):
+    backups = list(reversed(sorted(os.listdir(backup_dir))))
+
+    while(backups and directory_size(backup_dir) > max_backup_size):
+        backup = backups.pop()
+        os.remove(os.path.join(backup_dir, backup))
 
 
 def main():
@@ -66,12 +64,13 @@ def main():
     args = parser.parse_args()
 
     with open(args.config) as f:
-        cfg = json.load(f)
+        config = json.load(f)
 
-    backup_dest = backup_world(cfg['server_dir'], cfg['world_name'], cfg['backup_dir'])
-    generate_map(backup_dest, cfg['overviewer_dir'])
-    compress_backup(backup_dest)
-    prune_backups(cfg['backup_dir'], cfg['max_backup_size'])
+    for world_name, world_config in config.iteritems():
+        backup_dest = backup_world(world_name, world_config['world_dir'], world_config['backup_dir'])
+        generate_map(backup_dest, world_config['overview_dir'])
+        compress_backup(backup_dest)
+        prune_backups(world_config['backup_dir'], world_config['max_backup_size'])
 
 
 if __name__ == '__main__':
