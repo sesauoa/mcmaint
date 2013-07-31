@@ -6,7 +6,9 @@ import subprocess
 import argparse
 import json
 import datetime
+import logging
 
+logging.basicConfig(level=logging.INFO)
 
 def directory_size(path):
     total_size = 0
@@ -36,17 +38,21 @@ def backup_world(world_name, world_dir, backup_dir):
     backup_dest = os.path.join(backup_dir, backup_name)
 
     if (os.path.exists(world_dir) and not os.path.exists(backup_dest)):
+        logging.info('backing up {} from {} to {}'.
+            format(world_name, world_dir, backup_dir))
         shutil.copytree(world_dir, backup_dest)
 
     return backup_dest
 
 
 def generate_map(world_dir, overview_dir):
+    logging.info('generating overviewer map from {} in {}'.format(world_dir, overview_dir))
     subprocess.call('overviewer.py {} {}'.format(world_dir, overview_dir), shell=True)
 
 
 def compress_backup(backup_dest):
-    subprocess.call('zip -r {} {}'.format(backup_dest + '.zip', backup_dest), shell=True)
+    logging.info('compressing {}'.format('backup_dest'))
+    subprocess.call('zip -rq {} {}'.format(backup_dest + '.zip', backup_dest), shell=True)
     shutil.rmtree(backup_dest)
 
 
@@ -55,6 +61,7 @@ def prune_backups(backup_dir, max_backup_size):
 
     while(backups and directory_size(backup_dir) > max_backup_size):
         backup = backups.pop()
+        logging.info('pruning {}'.format(backup))
         os.remove(os.path.join(backup_dir, backup))
 
 
