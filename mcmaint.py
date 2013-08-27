@@ -28,7 +28,7 @@ def directory_size(path):
 
             seen.add(stat.st_ino)
 
-            total_size += stat.st_sizes
+            total_size += stat.st_size
 
     return total_size / 1000000.0  # return in mb
 
